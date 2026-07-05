@@ -8,8 +8,8 @@ import LectureCard from "./components/LectureCard";
 import GroupedResults from "./components/GroupedResults";
 
 const SEMESTERS = [
-  { value: "2026S", label: "FS2026" },
   { value: "2026W", label: "HS2026" },
+  { value: "2026S", label: "FS2026" },
   { value: "2025W", label: "HS2025" },
   { value: "2025S", label: "FS2025" },
   { value: "2024W", label: "HS2024" },
@@ -606,13 +606,13 @@ function SearchPage() {
                 <input
                   type="text"
                   placeholder={mode === "semantic" ? "Describe what you want to learn…" : "Search lectures by keyword…"}
-                  className="input join-item input-bordered w-full min-h-[44px] sm:min-h-[48px] text-sm sm:text-base"
+                  className="input join-item input-bordered w-full min-h-[44px] sm:min-h-[44px] text-sm sm:text-base"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
                 />
                 <button
-                  className="btn join-item btn-primary min-h-[44px] sm:min-h-[48px] px-6 sm:px-8 text-sm sm:text-base"
+                  className="btn join-item btn-primary min-h-[44px] sm:min-h-[44px] px-6 sm:px-8 text-sm sm:text-base"
                   onClick={handleSearch}
                   disabled={loading}
                 >

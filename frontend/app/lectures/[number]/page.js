@@ -89,7 +89,7 @@ export default async function LecturePage({ params }) {
               {lecture.type || "—"}
             </span>
             {lecture.language && (
-              <span className="badge badge-soft badge-neutral badge-sm text-sm">
+              <span className="badge badge-outline badge-sm text-sm text-base-content">
                 {clean(lecture.language)}
               </span>
             )}
@@ -143,11 +143,11 @@ export default async function LecturePage({ params }) {
                     <Link
                       key={i}
                       href={offeredInHref(item)}
-                      className="flex items-center gap-1 text-sm flex-wrap hover:bg-base-200 -mx-1 px-1 py-0.5 rounded-lg transition-colors"
+                      className="flex items-center gap-1 text-sm truncate hover:bg-base-200 active:bg-base-300 -mx-1 px-1 py-1.5 rounded-lg transition-colors cursor-pointer"
                     >
-                      <span className="font-medium text-base-content/80 hover:text-primary transition-colors">{item.programme}</span>
-                      {item.section && <><span className="text-base-content/30">›</span><span className="text-base-content/70 hover:text-secondary transition-colors">{item.section}</span></>}
-                      {item.sub_section && <><span className="text-base-content/30">›</span><span className="text-base-content/60 hover:text-secondary transition-colors">{item.sub_section}</span></>}
+                      <span className="font-medium text-base-content/80 hover:text-primary active:text-primary transition-colors truncate min-w-0">{item.programme}</span>
+                      {item.section && <><span className="text-base-content/30 shrink-0">›</span><span className="text-base-content/70 hover:text-secondary active:text-secondary transition-colors truncate min-w-0">{item.section}</span></>}
+                      {item.sub_section && <><span className="text-base-content/30 shrink-0">›</span><span className="text-base-content/60 hover:text-secondary active:text-secondary transition-colors truncate min-w-0">{item.sub_section}</span></>}
                     </Link>
                   ))}
                 </div>

@@ -26,7 +26,7 @@ export default function LectureCard({ lecture }) {
                 {lecture.type || "—"}
               </span>
               {lecture.language && (
-                <span className="badge badge-soft badge-neutral badge-xs shrink-0">
+                <span className="badge badge-outline badge-xs shrink-0 text-base-content">
                   {clean(lecture.language)}
                 </span>
               )}
