@@ -582,7 +582,7 @@ function SearchPage() {
                 {MODES.map((m) => (
                   <button
                     key={m.key}
-                    className={`btn btn-sm sm:btn-md min-h-[40px] sm:min-h-[44px] ${mode === m.key ? "btn-primary" : "btn-soft btn-neutral"}`}
+                    className={`btn btn-sm min-h-[38px] ${mode === m.key ? "btn-primary" : "btn-soft btn-neutral"}`}
                     onClick={() => handleModeSwitch(m.key)}
                   >
                     {m.label}
