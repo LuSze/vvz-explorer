@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Course Catalog Explorer — ETH Lecture Search",
+  title: "Course Catalog — VVZ ETH Zürich",
   description: "Semantic search for ETH Zurich lecture catalogue. Find lectures by meaning, not just keywords.",
 };
 

@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
   if (!lecture) return { title: "Not Found — Course Catalog Explorer" };
   const clean = (s) => (s || "").replace(/\xa0/g, " ");
   return {
-    title: `${lecture.title} — Course Catalog Explorer`,
+    title: `${lecture.title} — VVZ ETH Zürich`,
     description: clean(lecture.abstract).slice(0, 200),
   };
 }

@@ -540,6 +540,19 @@ function SearchPage() {
     setTrackHighlight(filteredTracks.length > 0 ? 0 : -1);
   }, [trackSearch, filteredTracks.length]);
 
+  // Dynamic page title
+  useEffect(() => {
+    const q = query.trim();
+    const track = selectedTrack;
+    const parts = [];
+    if (q && mode === "semantic") parts.push("Semantic: " + q);
+    else if (q) parts.push("Search: " + q);
+    if (track) parts.push(track);
+    document.title = parts.length > 0
+      ? parts.join(" — ") + " — VVZ ETH Zürich"
+      : "Course Catalog — VVZ ETH Zürich";
+  }, [query, selectedTrack, mode]);
+
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el || results.length >= total || mode !== "text") return;
