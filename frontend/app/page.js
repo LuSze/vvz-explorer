@@ -577,7 +577,7 @@ function SearchPage() {
       <main className="max-w-4xl mx-auto px-4 -mt-4">
         <div className="card card-border border-base-300 bg-base-100 shadow-sm">
           <div className="card-body p-4 sm:p-4 space-y-3 sm:space-y-3">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-2 max-sm:flex-wrap">
               <div className="flex gap-2 max-sm:gap-1.5">
                 {MODES.map((m) => (
                   <button
@@ -596,12 +596,13 @@ function SearchPage() {
                 onChange={(opt) => setSemester(opt || SEMESTERS[0])}
                 placeholder="Semester"
                 searchPlaceholder="Search semester…"
-                className="w-40"
+                className="w-40 max-sm:w-full"
               />
             </div>
 
             <div className="relative">
-              <div className="join w-full">
+              {/* Desktop: joined horizontal bar */}
+              <div className="join w-full max-sm:hidden">
                 <input
                   type="text"
                   placeholder={mode === "semantic" ? "Describe what you want to learn…" : "Search lectures by keyword…"}
@@ -628,6 +629,37 @@ function SearchPage() {
                     </svg>
                   </button>
                 )}
+              </div>
+              {/* Mobile: stacked input + buttons */}
+              <div className="flex flex-col gap-2 sm:hidden">
+                <input
+                  type="text"
+                  placeholder={mode === "semantic" ? "Describe what you want to learn…" : "Search lectures by keyword…"}
+                  className="input input-bordered w-full min-h-[44px] text-sm"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+                <div className="flex gap-2">
+                  <button
+                    className="btn btn-primary flex-1 min-h-[44px] text-sm"
+                    onClick={handleSearch}
+                    disabled={loading}
+                  >
+                    {loading ? <span className="loading loading-spinner loading-md" /> : "Search"}
+                  </button>
+                  {(query || results.length > 0 || selectedTrack || selectedFields.length > 0) && (
+                    <button
+                      className="btn btn-soft btn-neutral min-h-[44px] px-3"
+                      onClick={handleReset}
+                      title="Reset search"
+                    >
+                      <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
 
               {suggestOpen && suggestions.length > 0 && (
