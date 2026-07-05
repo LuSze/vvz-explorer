@@ -140,10 +140,10 @@ export default async function LecturePage({ params }) {
                 </h3>
                 <div className="space-y-1.5">
                   {lecture.offered_in.map((item, i) => (
-                    <div key={i} className="flex items-center gap-1 text-sm flex-wrap -mx-1 px-1 py-1.5 rounded-lg">
+                    <div key={i} className="flex items-center gap-1 text-sm flex-wrap -mx-1 px-1 py-1.5">
                       <Link
                         href={offeredInHref(item, 0)}
-                        className="font-medium text-base-content/80 hover:text-primary active:text-primary hover:bg-base-200 active:bg-base-300 -mx-1 px-1.5 py-0.5 rounded transition-colors whitespace-nowrap"
+                        className="font-medium text-base-content/80 hover:text-primary active:text-primary hover:bg-base-200 active:bg-base-300 -mx-1 px-1.5 py-0.5 rounded transition-colors"
                       >
                         {item.programme}
                       </Link>
@@ -152,7 +152,7 @@ export default async function LecturePage({ params }) {
                           <span className="text-base-content/30 select-none">›</span>
                           <Link
                             href={offeredInHref(item, 1)}
-                            className="text-base-content/70 hover:text-secondary active:text-secondary hover:bg-base-200 active:bg-base-300 -mx-1 px-1.5 py-0.5 rounded transition-colors whitespace-nowrap"
+                            className="text-base-content/70 hover:text-secondary active:text-secondary hover:bg-base-200 active:bg-base-300 -mx-1 px-1.5 py-0.5 rounded transition-colors"
                           >
                             {item.section}
                           </Link>
@@ -163,7 +163,7 @@ export default async function LecturePage({ params }) {
                           <span className="text-base-content/30 select-none">›</span>
                           <Link
                             href={offeredInHref(item, 2)}
-                            className="text-base-content/60 hover:text-secondary active:text-secondary hover:bg-base-200 active:bg-base-300 -mx-1 px-1.5 py-0.5 rounded transition-colors whitespace-nowrap"
+                            className="text-base-content/60 hover:text-secondary active:text-secondary hover:bg-base-200 active:bg-base-300 -mx-1 px-1.5 py-0.5 rounded transition-colors"
                           >
                             {item.sub_section}
                           </Link>
