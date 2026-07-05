@@ -327,7 +327,7 @@ function SearchPage() {
     if (effectiveL2) params.set("level2_id", effectiveL2);
     if (effectiveL3) params.set("level3_id", effectiveL3);
     const qs = params.toString();
-    router.push(qs ? `/?${qs}` : "/", { scroll: false });
+    router.replace(qs ? `/?${qs}` : "/", { scroll: false });
     searchKeyRef.current = `${query.trim()}|${mode}|${semester.value}|${selectedTrack}|${selectedFields.join(",")}|${effectiveL1 ?? ""}|${effectiveL2 ?? ""}|${effectiveL3 ?? ""}`;
     if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
     triggerSearch(query, mode, selectedTrack, selectedFields.join(","), 1, false, effectiveL1, effectiveL2, effectiveL3);
@@ -499,7 +499,7 @@ function SearchPage() {
     setSuggestOpen(false);
     searchKeyRef.current = "";
     if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
-    router.push("/", { scroll: false });
+    router.replace("/", { scroll: false });
   };
 
   const filteredTracks = tracks.filter((t) =>
