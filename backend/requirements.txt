@@ -1,0 +1,6 @@
+Django>=5.2
+djangorestframework
+django-cors-headers
+sentence-transformers
+numpy
+sqlite-vec
