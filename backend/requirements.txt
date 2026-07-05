@@ -4,3 +4,5 @@ django-cors-headers
 sentence-transformers
 numpy
 sqlite-vec
+requests
+beautifulsoup4
