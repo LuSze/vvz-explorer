@@ -73,7 +73,7 @@ export default async function LecturePage({ params }) {
   return (
     <div className="min-h-screen bg-base-200">
       <header className="bg-primary text-primary-content shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-6 sm:py-4">
+        <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-4 pb-8 sm:pb-6">
           <div className="flex items-start justify-between">
             <BackButton />
             <ThemeToggle />
@@ -143,11 +143,11 @@ export default async function LecturePage({ params }) {
                     <Link
                       key={i}
                       href={offeredInHref(item)}
-                      className="flex items-center gap-1 text-sm truncate hover:bg-base-200 active:bg-base-300 -mx-1 px-1 py-1.5 rounded-lg transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-sm flex-wrap hover:bg-base-200 active:bg-base-300 -mx-1 px-1 py-1.5 rounded-lg transition-colors cursor-pointer"
                     >
-                      <span className="font-medium text-base-content/80 hover:text-primary active:text-primary transition-colors truncate min-w-0">{item.programme}</span>
-                      {item.section && <><span className="text-base-content/30 shrink-0">›</span><span className="text-base-content/70 hover:text-secondary active:text-secondary transition-colors truncate min-w-0">{item.section}</span></>}
-                      {item.sub_section && <><span className="text-base-content/30 shrink-0">›</span><span className="text-base-content/60 hover:text-secondary active:text-secondary transition-colors truncate min-w-0">{item.sub_section}</span></>}
+                      <span className="font-medium text-base-content/80 hover:text-primary active:text-primary transition-colors whitespace-nowrap">{item.programme}</span>
+                      {item.section && <span className="whitespace-nowrap"><span className="text-base-content/30">› </span><span className="text-base-content/70 hover:text-secondary active:text-secondary transition-colors">{item.section}</span></span>}
+                      {item.sub_section && <span className="whitespace-nowrap"><span className="text-base-content/30">› </span><span className="text-base-content/60 hover:text-secondary active:text-secondary transition-colors">{item.sub_section}</span></span>}
                     </Link>
                   ))}
                 </div>
