@@ -540,18 +540,19 @@ function SearchPage() {
     setTrackHighlight(filteredTracks.length > 0 ? 0 : -1);
   }, [trackSearch, filteredTracks.length]);
 
-  // Dynamic page title
+  // Dynamic page title — runs after every render to correct
+  // any overwrite from router.replace or layout metadata
   useEffect(() => {
     const q = query.trim();
-    const track = selectedTrack;
     const parts = [];
     if (q && mode === "semantic") parts.push("Semantic: " + q);
     else if (q) parts.push("Search: " + q);
-    if (track) parts.push(track);
-    document.title = parts.length > 0
+    if (selectedTrack) parts.push(selectedTrack);
+    const title = parts.length > 0
       ? parts.join(" — ") + " — VVZ ETH Zürich"
       : "Course Catalog — VVZ ETH Zürich";
-  }, [query, selectedTrack, mode]);
+    if (document.title !== title) document.title = title;
+  });
 
   useEffect(() => {
     const el = sentinelRef.current;
