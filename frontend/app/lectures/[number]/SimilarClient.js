@@ -1,37 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-
-const clean = (s) => (s || "").replace(/\xa0/g, " ");
-
-function SimilarItem({ sim }) {
-  return (
-    <Link
-      href={`/lectures/${encodeURIComponent(sim.number)}/`}
-      className="card card-border border-base-300 bg-base-100 shadow-sm block hover:shadow-md transition-shadow"
-    >
-      <div className="card-body p-4 sm:p-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0">
-            <span className="badge badge-outline badge-sm font-mono shrink-0 text-xs self-start sm:self-auto">
-              {sim.number}
-            </span>
-            <span className="text-base font-medium leading-snug">
-              {sim.title}
-            </span>
-          </div>
-          <span className="badge badge-soft badge-primary badge-sm shrink-0 text-xs self-start sm:self-auto mt-1 sm:mt-0">
-            {sim.type || "—"}
-          </span>
-        </div>
-        <p className="text-sm text-base-content/60 mt-2 line-clamp-2 leading-relaxed">
-          {clean(sim.abstract) || clean(sim.content) || ""}
-        </p>
-      </div>
-    </Link>
-  );
-}
+import LectureCard from "../../components/LectureCard";
 
 export default function SimilarClient({ number }) {
   const [similar, setSimilar] = useState(null);
@@ -86,7 +56,7 @@ export default function SimilarClient({ number }) {
       </h2>
       <div className="space-y-3">
         {similar.map((sim) => (
-          <SimilarItem key={sim.number} sim={sim} />
+          <LectureCard key={sim.number} lecture={sim} />
         ))}
       </div>
     </div>
