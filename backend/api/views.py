@@ -29,7 +29,8 @@ class SearchView(APIView):
         k = int(request.query_params.get("k", 20))
         study_track = request.query_params.get("study_track", "").strip()
         study_track = study_track or None
-        results = search_lectures(query, k, study_track, semester=_semester(request))
+        cross_semester = request.query_params.get("cross_semester", "").strip().lower() in ("true", "1")
+        results = search_lectures(query, k, study_track, semester=_semester(request), cross_semester=cross_semester)
         return Response({"query": query, "count": len(results), "results": results})
 
 

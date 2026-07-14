@@ -1,26 +1,58 @@
-# Django
+# Python
 __pycache__/
-*.pyc
-*.pyo
-backend/db.sqlite3
-
-# PostgreSQL data volume
-data/
-
-# Environment
-.env
+*.py[cod]
+*$py.class
 .venv/
 venv/
+.env
+*.db
+*.db-journal
+
+# Node
+node_modules/
+.next/
+out/
+build/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Node
-node_modules/
-.next/
-*.tsbuildinfo
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual environments
+.embed-env/
+
+# Large data files
+*.db
+embeddings_*.db
+lectures_*.db
+data/
+
+# Session files
+session-*.md
+
+# Secrets
+secrets/
+*.pem
+*.key
+*.crt
+
+# Local overrides
+docker-compose.override.yml
+.env

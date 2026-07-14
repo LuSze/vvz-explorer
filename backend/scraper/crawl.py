@@ -1,11 +1,15 @@
 """
 VVZ course catalog scraper.
 
-Usage:
-    python scraper/crawl.py                         # FS2026
-    python scraper/crawl.py --semester 2026W        # HS2026
-    python scraper/crawl.py --semester 2025W        # WS2025/26
-    python scraper/crawl.py --output-dir /tmp/dbs
+Scrapes the ETH VVZ course catalog for a given semester and stores
+lecture data in a SQLite database (lectures_<semester>.db).
+
+Usage examples:
+    python scraper/crawl.py                                          # HS2026
+    python scraper/crawl.py --semester 2026S                         # FS2026
+    python scraper/crawl.py --semester 2025W                         # WS2025/26
+    python scraper/crawl.py --output-dir /tmp/dbs                    # custom output
+    python scraper/crawl.py --url "https://www.vvz.ethz.ch/..."      # custom start URL
 """
 
 import argparse
@@ -64,12 +68,18 @@ def extract_performance_assessment(soup):
     table = h3.find_next("table")
     if not table:
         return None
-    lines = []
+    result = {}
     for tr in table.find_all("tr"):
-        line = tr.get_text(separator=" ", strip=True)
-        if line:
-            lines.append(line)
-    return " | ".join(lines) if lines else None
+        classes = tr.get("class", [])
+        if "td-level" in classes:
+            continue
+        cells = tr.find_all("td")
+        if len(cells) >= 2:
+            label = cells[0].get_text(strip=True)
+            value = cells[1].get_text(separator="\n", strip=True)
+            if label:
+                result[label] = _clean(value)
+    return json.dumps(result, ensure_ascii=False) if result else None
 
 
 def extract_competencies(soup):
@@ -113,6 +123,7 @@ def extract_catalogue_data(soup):
 
 def init_db(db_path):
     conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = OFF")
     for table in [
         "lectures", "lecturers", "lecture_lecturer_link",
@@ -254,7 +265,6 @@ def link_lecture_lecturer(conn, number, lecturer_names, lecturer_urls):
     if not lecture:
         return
     lecture_id = lecture["id"]
-    conn.row_factory = sqlite3.Row
     for name, url in zip(lecturer_names, lecturer_urls):
         lecturer = conn.execute(
             "SELECT id FROM lecturers WHERE name = ? AND url = ?", (name, url)
@@ -429,8 +439,8 @@ def extract_lectures(session, soup, semester_code, conn, delay):
 def main():
     parser = argparse.ArgumentParser(description="VVZ course catalog scraper")
     parser.add_argument(
-        "--semester", default="2026S",
-        help="Semester code (e.g. 2026S, 2026W). Default: 2026S",
+        "--semester", default="2026W",
+        help="Semester code (e.g. 2026S, 2026W). Default: 2026W",
     )
     parser.add_argument(
         "--output-dir", default=".",
@@ -439,6 +449,10 @@ def main():
     parser.add_argument(
         "--delay", type=float, default=0.3,
         help="Seconds between detail page requests. Default: 0.3",
+    )
+    parser.add_argument(
+        "--url", default=None,
+        help="Custom starting URL (overrides the auto-generated semester search URL)",
     )
     args = parser.parse_args()
 
@@ -453,7 +467,7 @@ def main():
 
     conn = init_db(db_path)
 
-    first_url = (
+    first_url = args.url or (
         f"{BASE_URL}/Vorlesungsverzeichnis/sucheLehrangebot.view"
         f"?lang=en&search=on&semkez={semester_code}"
         f"&studiengangTyp=&deptId=&studiengangAbschnittId="

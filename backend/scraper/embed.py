@@ -1,17 +1,18 @@
 """
 Generate embeddings for all lectures in a scraped VVZ database.
 
-Reads lectures_FS2026.db (or --semester variant), embeds each non-trivial
+Reads lectures_HS2026.db (or --semester variant), embeds each non-trivial
 text field with all-MiniLM-L6-v2, and writes results into
-embeddings_FS2026.db (sqlite-vec virtual table + BLOB backup).
+embeddings_HS2026.db (sqlite-vec virtual table + BLOB backup).
 
 Usage:
-    python scraper/embed.py                         # FS2026
-    python scraper/embed.py --semester 2026W        # HS2026
+    python scraper/embed.py                         # HS2026
+    python scraper/embed.py --semester 2026S        # FS2026
     python scraper/embed.py --input-dir /tmp/dbs    # custom location
 """
 
 import argparse
+import json
 import sqlite3
 import time
 from pathlib import Path
@@ -57,8 +58,8 @@ def clean(text):
 def main():
     parser = argparse.ArgumentParser(description="Generate embeddings for VVZ lectures")
     parser.add_argument(
-        "--semester", default="2026S",
-        help="Semester code (e.g. 2026S, 2026W). Default: 2026S",
+        "--semester", default="2026W",
+        help="Semester code (e.g. 2026S, 2026W). Default: 2026W",
     )
     parser.add_argument(
         "--input-dir", default=".",
@@ -137,7 +138,20 @@ def main():
         for row in batch:
             number = row["number"]
             for field in TEXT_FIELDS:
-                text = clean(row[field])
+                value = row[field]
+                text = None
+                if field == "performance_assessment" and value:
+                    try:
+                        parsed = json.loads(value)
+                        if isinstance(parsed, dict):
+                            text = ". ".join(f"{k}: {v}" for k, v in parsed.items())
+                        else:
+                            text = str(parsed)
+                    except (json.JSONDecodeError, TypeError):
+                        text = value
+                else:
+                    text = value
+                text = clean(text)
                 if has_meaningful_content(text):
                     texts.append(text)
                     lecture_numbers.append(number)

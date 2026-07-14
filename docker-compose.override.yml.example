@@ -1,0 +1,9 @@
+# Development Override
+# Copy to docker-compose.override.yml and customize
+# This file is ignored by git
+
+# services:
+#   backend-dev:
+#     environment:
+#       - LECTURES_DB_PATH=/data/lectures_HS2026.db
+#       - EMBEDDINGS_DB_PATH=/data/embeddings_HS2026.db

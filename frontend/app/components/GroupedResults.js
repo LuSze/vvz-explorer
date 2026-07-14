@@ -38,23 +38,29 @@ function buildCategoryTree(lectures) {
   return tree;
 }
 
-export default function GroupedResults({ lectures }) {
+export default function GroupedResults({ lectures, activeCat1Name, activeCat2Name, minimal, semester }) {
   const tree = buildCategoryTree(lectures);
-  const keys = Object.keys(tree).filter((k) => k !== "__uncategorized__");
+  let keys = Object.keys(tree).filter((k) => k !== "__uncategorized__");
   keys.sort((a, b) => catSortKey(a).localeCompare(catSortKey(b)));
+  if (activeCat1Name) {
+    keys = keys.filter((k) => k === activeCat1Name);
+  }
 
   return (
     <>
       {keys.map((cat1) => {
         const cat2Map = tree[cat1];
-        const cat2Keys = Object.keys(cat2Map).sort((a, b) => {
+        let cat2Keys = Object.keys(cat2Map).sort((a, b) => {
           if (!a) return 1;
           if (!b) return -1;
           return a.localeCompare(b);
         });
+        if (activeCat2Name) {
+          cat2Keys = cat2Keys.filter((c2) => c2 === activeCat2Name);
+        }
         return (
-          <div key={cat1} className="mb-6 sm:mb-4">
-            <h2 className="text-base font-bold text-base-content/70 uppercase tracking-wider mb-3">
+          <div key={cat1} className="mb-4">
+            <h2 className="text-xs font-bold text-base-content/70 uppercase tracking-wider mb-2">
               {cat1}
             </h2>
             {cat2Keys.map((cat2) => {
@@ -65,24 +71,24 @@ export default function GroupedResults({ lectures }) {
                 return a.localeCompare(b);
               });
               return (
-                <div key={cat2} className="mb-4 sm:mb-3 ml-0 sm:ml-4">
+                <div key={cat2} className="mb-3 ml-0 sm:ml-4">
                   {cat2 && (
-                    <h3 className="text-sm font-semibold text-base-content/60 mb-2">
+                    <h3 className="text-xs font-semibold text-base-content/60 mb-1">
                       {cat2}
                     </h3>
                   )}
                   {cat3Keys.map((cat3) => {
                     const lectures = cat3Map[cat3];
                     return (
-                      <div key={cat3} className="mb-3 sm:mb-2 ml-0 sm:ml-4">
+                      <div key={cat3} className="mb-2 ml-0 sm:ml-4">
                         {cat3 && (
-                          <h4 className="text-xs font-medium text-base-content/50 uppercase tracking-wider mb-2">
+                          <h4 className="text-[10px] font-medium text-base-content/50 uppercase tracking-wider mb-1">
                             {cat3}
                           </h4>
                         )}
-                        <div className="space-y-2 sm:space-y-2">
+                        <div className="space-y-1.5">
                           {lectures.map((l) => (
-                            <LectureCard key={l.number} lecture={l} />
+                            <LectureCard key={l.number} lecture={l} minimal={minimal} semester={semester} />
                           ))}
                         </div>
                       </div>
@@ -95,13 +101,13 @@ export default function GroupedResults({ lectures }) {
         );
       })}
       {tree.__uncategorized__ && tree.__uncategorized__.length > 0 && (
-        <div className="mb-6 sm:mb-4">
-          <h2 className="text-base font-bold text-base-content/70 uppercase tracking-wider mb-3">
+        <div className="mb-4">
+          <h2 className="text-xs font-bold text-base-content/70 uppercase tracking-wider mb-2">
             Other
           </h2>
-          <div className="space-y-3 sm:space-y-2">
+          <div className="space-y-1.5">
             {tree.__uncategorized__.map((l) => (
-              <LectureCard key={l.number} lecture={l} />
+              <LectureCard key={l.number} lecture={l} minimal={minimal} semester={semester} />
             ))}
           </div>
         </div>

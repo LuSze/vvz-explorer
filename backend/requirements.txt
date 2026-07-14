@@ -1,8 +1,12 @@
 Django>=5.2
 djangorestframework
 django-cors-headers
+gunicorn
 sentence-transformers
+einops
 numpy
 sqlite-vec
 requests
 beautifulsoup4
+psycopg2-binary
+pgvector

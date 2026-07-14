@@ -10,8 +10,17 @@ _model = None
 def get_model():
     global _model
     if _model is None:
-        _model = SentenceTransformer(settings.EMBEDDING_MODEL_NAME)
+        _model = SentenceTransformer(settings.EMBEDDING_MODEL_NAME, trust_remote_code=True)
     return _model
+
+
+CROSS_SEMESTER_PARTNER = {
+    "2026W": "2026S",
+    "2026S": "2025W",
+    "2025W": "2025S",
+    "2025S": "2024W",
+    "2024W": None,
+}
 
 
 def _semester_db_path(semester):
@@ -78,57 +87,72 @@ def _enrich_lecture(lecture, lec_db, study_track_name=None):
     return data
 
 
-def search_lectures(query_text, k=20, study_track=None, semester=None):
+def search_lectures(query_text, k=20, study_track=None, semester=None, cross_semester=False):
     model = get_model()
-    query_embedding = model.encode([query_text])
+    query_embedding = model.encode([query_text], prompt_name="query")
 
-    emb_db = get_embeddings_db(semester=semester)
-    try:
-        results = emb_db.execute(
-            """
-            SELECT lecture_number, distance
-            FROM vss_embeddings
-            WHERE embedding MATCH ?
-            AND k = ?
-            """,
-            (query_embedding, k),
-        ).fetchall()
-    finally:
-        emb_db.close()
+    semesters_to_query = [semester] if semester else [None]
+    if cross_semester and semester and semester in CROSS_SEMESTER_PARTNER:
+        partner = CROSS_SEMESTER_PARTNER[semester]
+        if partner:
+            semesters_to_query.append(partner)
 
     seen = set()
-    lecture_numbers = []
-    for row in results:
-        num = row["lecture_number"]
-        if num not in seen:
-            seen.add(num)
-            lecture_numbers.append(num)
+    lectures = []
+    default_sem = semester or settings.DEFAULT_SEMESTER
 
-    if study_track:
-        lec_db = get_lectures_db(semester=semester)
+    for sem in semesters_to_query:
+        emb_db = get_embeddings_db(semester=sem)
         try:
-            placeholders = ",".join("?" for _ in lecture_numbers)
-            cur = lec_db.execute(f"""
-                SELECT DISTINCT l.number FROM lectures l
-                JOIN lecture_category_link lcl ON l.id = lcl.lecture_id
-                JOIN study_tracks st ON st.id = lcl.study_tracks_id
-                WHERE st.name = ? AND l.number IN ({placeholders})
-            """, [study_track] + lecture_numbers)
-            filtered = {row["number"] for row in cur.fetchall()}
-            lecture_numbers = [n for n in lecture_numbers if n in filtered]
+            results = emb_db.execute(
+                """
+                SELECT lecture_number, distance
+                FROM vss_embeddings
+                WHERE embedding MATCH ?
+                AND k = ?
+                """,
+                (query_embedding, k),
+            ).fetchall()
+        finally:
+            emb_db.close()
+
+        lecture_numbers = []
+        for row in results:
+            num = row["lecture_number"]
+            if num not in seen:
+                seen.add(num)
+                lecture_numbers.append(num)
+
+        if not lecture_numbers:
+            continue
+
+        if study_track:
+            lec_db = get_lectures_db(semester=sem)
+            try:
+                placeholders = ",".join("?" for _ in lecture_numbers)
+                cur = lec_db.execute(f"""
+                    SELECT DISTINCT l.number FROM lectures l
+                    JOIN lecture_category_link lcl ON l.id = lcl.lecture_id
+                    JOIN study_tracks st ON st.id = lcl.study_tracks_id
+                    WHERE st.name = ? AND l.number IN ({placeholders})
+                """, [study_track] + lecture_numbers)
+                filtered = {row["number"] for row in cur.fetchall()}
+                lecture_numbers = [n for n in lecture_numbers if n in filtered]
+            finally:
+                lec_db.close()
+
+        lec_db = get_lectures_db(semester=sem)
+        sem_label = sem or default_sem
+        try:
+            for num in lecture_numbers:
+                cur = lec_db.execute("SELECT * FROM lectures WHERE number = ?", (num,))
+                lecture = cur.fetchone()
+                if lecture:
+                    enriched = _enrich_lecture(lecture, lec_db)
+                    enriched["semester"] = sem_label
+                    lectures.append(enriched)
         finally:
             lec_db.close()
-
-    lec_db = get_lectures_db(semester=semester)
-    try:
-        lectures = []
-        for num in lecture_numbers:
-            cur = lec_db.execute("SELECT * FROM lectures WHERE number = ?", (num,))
-            lecture = cur.fetchone()
-            if lecture:
-                lectures.append(_enrich_lecture(lecture, lec_db))
-    finally:
-        lec_db.close()
 
     return lectures
 

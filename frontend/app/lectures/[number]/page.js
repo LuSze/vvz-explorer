@@ -24,13 +24,16 @@ async function fetchJSON(url) {
   return data;
 }
 
-function getLecture(number) {
-  return fetchJSON(`${API}/lectures/${encodeURIComponent(number)}/`);
+function getLecture(number, semester) {
+  let url = `${API}/lectures/${encodeURIComponent(number)}/`;
+  if (semester) url += `?semester=${encodeURIComponent(semester)}`;
+  return fetchJSON(url);
 }
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params, searchParams }) {
   const { number } = await params;
-  const lecture = await getLecture(number);
+  const semester = (await searchParams)?.semester || "";
+  const lecture = await getLecture(number, semester);
   if (!lecture) return { title: "Not Found — Course Catalog Explorer" };
   const clean = (s) => (s || "").replace(/\xa0/g, " ");
   return {
@@ -43,19 +46,20 @@ function Field({ label, children }) {
   if (!children) return null;
   return (
     <div>
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-base-content/50 mb-2">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-base-content/50 mb-1">
         {label}
       </h3>
-      <div className="text-base text-base-content/80 leading-relaxed whitespace-pre-line">
+      <div className="text-xs text-base-content/80 leading-relaxed whitespace-pre-line">
         {children}
       </div>
     </div>
   );
 }
 
-export default async function LecturePage({ params }) {
+export default async function LecturePage({ params, searchParams }) {
   const { number } = await params;
-  const lecture = await getLecture(number);
+  const semester = (await searchParams)?.semester || "";
+  const lecture = await getLecture(number, semester);
 
   if (!lecture) {
     return (
@@ -73,40 +77,40 @@ export default async function LecturePage({ params }) {
   return (
     <div className="min-h-screen bg-base-200">
       <header className="bg-primary text-primary-content shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-4 pb-8 sm:pb-6">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 pt-6 sm:pt-4 pb-8 sm:pb-6">
           <div className="flex items-start justify-between">
             <BackButton />
             <ThemeToggle />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight mt-3 leading-snug">
+          <h1 className="text-sm sm:text-lg font-bold tracking-tight mt-2 leading-snug">
             {lecture.title}
           </h1>
-          <div className="flex flex-wrap items-center gap-3 mt-3">
-            <span className="badge badge-outline badge-md font-mono text-sm">
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            <span className="badge badge-outline badge-sm font-mono text-xs">
               {lecture.number}
             </span>
-            <span className="badge badge-soft badge-md text-sm">
+            <span className="badge badge-soft badge-sm text-xs">
               {lecture.type || "—"}
             </span>
             {lecture.language && (
-              <span className="badge badge-outline badge-sm text-sm text-base-content">
+              <span className="badge badge-outline badge-sm text-xs text-white">
                 {clean(lecture.language)}
               </span>
             )}
             {lecture.periodicity && (
-              <span className="text-sm opacity-70">{clean(lecture.periodicity)}</span>
+              <span className="text-xs opacity-70">{clean(lecture.periodicity)}</span>
             )}
             {lecture.ects && (
-              <span className="text-sm opacity-80">{clean(lecture.ects)}</span>
+              <span className="text-xs opacity-80">{clean(lecture.ects)}</span>
             )}
             {lecture.hours && (
-              <span className="text-sm opacity-80">{clean(lecture.hours)}</span>
+              <span className="text-xs opacity-80">{clean(lecture.hours)}</span>
             )}
           </div>
-          <div className="flex flex-wrap items-start justify-between gap-3 mt-2">
+          <div className="flex flex-wrap items-start justify-between gap-2 mt-1">
             <div className="min-w-0">
               {lecturerNames && (
-                <p className="text-sm opacity-70">{lecturerNames}</p>
+                <p className="text-xs opacity-70">{lecturerNames}</p>
               )}
             </div>
             {lecture.url && (
@@ -114,7 +118,7 @@ export default async function LecturePage({ params }) {
                 href={lecture.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-sm btn-outline border-white/30 text-white hover:bg-white/20 shrink-0"
+                className="btn btn-xs btn-outline border-white/30 text-white hover:bg-white/20 shrink-0"
               >
                 Open in VVZ
               </a>
@@ -123,9 +127,9 @@ export default async function LecturePage({ params }) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 -mt-4">
+      <main className="max-w-6xl mx-auto px-3 sm:px-4 -mt-4">
         <div className="card card-border border-base-300 bg-base-100 shadow-sm">
-          <div className="card-body p-5 sm:p-8 space-y-6">
+          <div className="card-body p-4 sm:p-5 space-y-4">
             <Field label="Abstract">{clean(lecture.abstract)}</Field>
             <Field label="Learning Objectives">{clean(lecture.learning_objective)}</Field>
             <Field label="Content">{clean(lecture.content)}</Field>
@@ -135,12 +139,12 @@ export default async function LecturePage({ params }) {
 
             {lecture.offered_in && lecture.offered_in.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-base-content/50 mb-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-base-content/50 mb-1">
                   Offered in
                 </h3>
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   {lecture.offered_in.map((item, i) => (
-                    <div key={i} className="flex items-center gap-1 text-sm flex-wrap -mx-1 px-1 py-1.5">
+                    <div key={i} className="flex items-center gap-1 text-xs flex-wrap -mx-1 px-1 py-1">
                       <Link
                         href={offeredInHref(item, 0)}
                         className="font-medium text-base-content/80 hover:text-primary active:text-primary hover:bg-base-200 active:bg-base-300 -mx-1 px-1.5 py-0.5 rounded transition-colors"
@@ -175,11 +179,11 @@ export default async function LecturePage({ params }) {
               </div>
             )}
 
-            <div className="pt-4" />
+            <div className="pt-2" />
           </div>
         </div>
 
-        <SimilarClient number={number} />
+        <SimilarClient number={number} semester={semester} />
       </main>
     </div>
   );

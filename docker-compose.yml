@@ -1,28 +1,126 @@
-name: vvz-explorer
+# vvz-explorer - Unified Docker Compose with Profiles
+# Usage:
+#   Dev:  docker compose --profile dev up
+#   Prod: docker compose --profile prod up -d
 
 services:
-  backend:
-    build: ./backend
+  # ──────────────────────────────────────────────
+  # DEV PROFILE: docker compose --profile dev up
+  # ──────────────────────────────────────────────
+  backend-dev:
+    profiles: ["dev"]
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile.dev
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./backend:/app
-      - ../lectures_FS2026.db:/app/lectures_FS2026.db
-      - ../embeddings_FS2026.db:/app/embeddings_FS2026.db
-      - huggingface_cache:/root/.cache/huggingface
+      - ./app/backend:/app
+      - ./data:/data
     ports:
       - "8000:8000"
-
-  frontend:
-    image: node:20
-    volumes:
-      - ./frontend:/app
-    working_dir: /app
-    command: bash -c "npm install && npm run dev"
     environment:
-      - WATCHPACK_POLLING=true
-    ports:
-      - "3010:3000"
-    depends_on:
-      - backend
+      - DJANGO_SETTINGS_MODULE=backend.settings.dev
+      - LECTURES_DB_PATH=/data/lectures_FS2026.db
+      - EMBEDDINGS_DB_PATH=/data/embeddings_FS2026.db
+      - DJANGO_DEBUG=True
+      - DJANGO_ALLOWED_HOSTS=*
+      - CORS_ALLOW_ALL_ORIGINS=True
 
+  frontend-dev:
+    profiles: ["dev"]
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile.dev
+    command: npm run dev
+    volumes:
+      - ./app/frontend:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend-dev
+
+  # ──────────────────────────────────────────────
+  # PROD PROFILE: docker compose --profile prod up -d
+  # ──────────────────────────────────────────────
+  postgres:
+    profiles: ["prod"]
+    image: pgvector/pgvector:pg17
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-sql:/docker-entrypoint-initdb.d:ro
+    environment:
+      - POSTGRES_DB=vvz
+      - POSTGRES_USER=vvz
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vvz -d vvz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend-prod:
+    profiles: ["prod"]
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile
+    volumes:
+      - staticfiles:/app/staticfiles
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend.settings.prod
+      - DATABASE_URL=postgresql://vvz:${POSTGRES_PASSWORD}@postgres:5432/vvz
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-}
+      - SECURE_SSL_REDIRECT=${SECURE_SSL_REDIRECT:-True}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend-prod:
+    profiles: ["prod"]
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend-prod:8000/api
+    depends_on:
+      - backend-prod
+    restart: unless-stopped
+
+  nginx:
+    profiles: ["prod"]
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - staticfiles:/var/www/static
+    depends_on:
+      - frontend-prod
+      - backend-prod
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
+  # VOLUMES & SECRETS
+  # ──────────────────────────────────────────────
 volumes:
+  pgdata:
+  staticfiles:
   huggingface_cache:
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password.txt

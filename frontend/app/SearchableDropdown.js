@@ -64,16 +64,16 @@ export default function SearchableDropdown({
   return (
     <div className={`relative ${className}`}>
       {label && (
-        <label className="text-sm font-medium text-base-content/70 block mb-2">
+        <label className="text-xs font-medium text-base-content/60 block mb-1">
           {label}
         </label>
       )}
       {loading ? (
-        <div className="skeleton h-12 w-full rounded-xl" />
+        <div className="skeleton h-9 w-full rounded-lg" />
       ) : (
         <button
           type="button"
-          className={`btn min-h-[48px] btn-border w-full justify-between text-base font-normal ${
+          className={`btn min-h-[36px] btn-border w-full justify-between text-sm font-normal ${
             disabled ? "opacity-40 cursor-not-allowed" : ""
           }`}
           onClick={() => !disabled && setOpen(!open)}
@@ -83,7 +83,7 @@ export default function SearchableDropdown({
             {displayValue}
           </span>
           <svg
-            className={`size-4 opacity-50 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+            className={`size-3.5 opacity-50 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
             fill="none" viewBox="0 0 24 24" stroke="currentColor"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -94,12 +94,12 @@ export default function SearchableDropdown({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => { setOpen(false); setSearch(""); setHighlight(-1); }} />
-          <div className="absolute z-20 mt-2 w-full bg-base-100 border border-base-300 rounded-xl shadow-xl max-h-80 flex flex-col">
-            <div className="p-3 border-b border-base-300">
+          <div className="absolute z-20 mt-1 w-full bg-base-100 border border-base-300 rounded-xl shadow-xl max-h-80 flex flex-col">
+            <div className="p-2 border-b border-base-300">
               <input
                 type="text"
                 placeholder={searchPlaceholder}
-                className="input input-bordered w-full min-h-[44px] text-sm"
+                className="input input-bordered w-full min-h-[36px] text-xs"
                 value={search}
                 onClick={(e) => e.stopPropagation()}
                 onChange={(e) => { setSearch(e.target.value); setHighlight(0); }}
@@ -109,7 +109,7 @@ export default function SearchableDropdown({
             </div>
             <div className="overflow-y-auto overflow-x-auto flex-1" ref={listRef}>
               <button
-                className={`w-full text-left px-4 py-3 text-sm transition-colors ${
+                className={`w-full text-left px-3 py-2 text-xs transition-colors ${
                   highlight === -1
                     ? "bg-primary/15 text-primary font-medium"
                     : "hover:bg-base-200"
@@ -121,7 +121,7 @@ export default function SearchableDropdown({
               {filtered.map((opt, i) => (
                 <button
                   key={optionValue(opt)}
-                  className={`w-full text-left px-4 py-3 text-sm transition-colors whitespace-nowrap ${
+                  className={`w-full text-left px-3 py-2 text-xs transition-colors whitespace-nowrap ${
                     highlight === i
                       ? "bg-primary/15 text-primary font-medium"
                       : "hover:bg-base-200"
@@ -134,7 +134,7 @@ export default function SearchableDropdown({
                 </button>
               ))}
               {search && filtered.length === 0 && (
-                <p className="px-4 py-6 text-sm text-base-content/40 text-center">No matching options</p>
+                <p className="px-3 py-4 text-xs text-base-content/40 text-center">No matching options</p>
               )}
             </div>
           </div>

@@ -17,6 +17,8 @@ export const metadata = {
   description: "Semantic search for ETH Zurich lecture catalogue. Find lectures by meaning, not just keywords.",
 };
 
+import Footer from "./components/Footer";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -25,8 +27,11 @@ export default function RootLayout({ children }) {
           __html: `(function(){try{var t=window.matchMedia("(prefers-color-scheme: dark)").matches?"eth-dark":"eth";document.documentElement.setAttribute("data-theme",t)}catch(e){}})();`,
         }} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen flex-col`}>
+        <ThemeProvider>
+          {children}
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );
