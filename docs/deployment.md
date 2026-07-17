@@ -116,7 +116,7 @@ tailscale funnel 443
 | Issue | Solution |
 |-------|----------|
 | `sqlite_vec` load failed | Ensure `sqlite-vec` is installed in backend image |
-| Embeddings not found | Run `./app/backend/embed.sh` first |
+| Embeddings not found | Run `./backend/embed.sh` first |
 | CORS errors | Set `CORS_ALLOWED_ORIGINS` in prod |
 | Static files 404 | Run `collectstatic` (done in Dockerfile) |
 | Migration errors | `docker compose exec backend python manage.py migrate` |

@@ -6,19 +6,19 @@ The crawler pipeline extracts ETH VVZ course data and generates embeddings for s
 
 ## Components
 
-### 1. VVZ Crawler (`app/backend/scraper/crawl.py`)
+### 1. VVZ Crawler (`backend/scraper/crawl.py`)
 
 Scrapes the ETH VVZ website for a given semester.
 
 ```bash
 # FS2026 (Spring 2026)
-python app/backend/scraper/crawl.py --semester 2026S
+python backend/scraper/crawl.py --semester 2026S
 
 # HS2026 (Fall 2026)
-python app/backend/scraper/crawl.py --semester 2026W
+python backend/scraper/crawl.py --semester 2026W
 
 # Custom output directory
-python app/backend/scraper/crawl.py --semester 2026S --output-dir /tmp/dbs
+python backend/scraper/crawl.py --semester 2026S --output-dir /tmp/dbs
 ```
 
 **Output:** `data/lectures_<SEMESTER>.db` (e.g., `data/lectures_FS2026.db`)
@@ -31,51 +31,51 @@ python app/backend/scraper/crawl.py --semester 2026S --output-dir /tmp/dbs
 - `arrow_one/two/three_categories` - Category hierarchy (3 levels)
 - `lecture_category_link` - Links lectures to categories per study track
 
-### 2. Embedding Generator (`app/backend/scraper/embed.py`)
+### 2. Embedding Generator (`backend/scraper/embed.py`)
 
 Generates vector embeddings for each lecture's text fields using `all-MiniLM-L6-v2` (384-dim).
 
 ```bash
-python app/backend/scraper/embed.py --semester 2026S
+python backend/scraper/embed.py --semester 2026S
 ```
 
 **Output:** `data/embeddings_<SEMESTER>.db` with:
 - `embeddings` table (BLOB backup)
 - `vss_embeddings` virtual table (sqlite-vec for fast k-NN)
 
-### 3. Re-embed with Nomic (`app/backend/reembed.py`)
+### 3. Re-embed with Nomic (`backend/reembed.py`)
 
 Regenerates embeddings using `nomic-ai/nomic-embed-text-v1.5` (768-dim) for higher quality.
 
 ```bash
-python app/backend/reembed.py
+python backend/reembed.py
 ```
 
 **Output:** Overwrites `data/embeddings_<SEMESTER>.db` with 768-dim vectors.
 
-### 4. Embedding Helper Script (`app/backend/embed.sh`)
+### 4. Embedding Helper Script (`backend/embed.sh`)
 
 Convenience script that sets up a virtual environment and runs the embedding pipeline.
 
 ```bash
 # FS2026 (default)
-./app/backend/embed.sh
+./backend/embed.sh
 
 # HS2026
-./app/backend/embed.sh 2026W
+./backend/embed.sh 2026W
 ```
 
 ## Usage Flow
 
 ```bash
 # 1. Crawl VVZ for FS2026
-python app/backend/scraper/crawl.py --semester 2026S
+python backend/scraper/crawl.py --semester 2026S
 
 # 2. Generate embeddings (384-dim, all-MiniLM-L6-v2)
-python app/backend/scraper/embed.py --semester 2026S
+python backend/scraper/embed.py --semester 2026S
 
 # 3. (Optional) Re-embed with Nomic (768-dim, higher quality)
-python app/backend/reembed.py
+python backend/reembed.py
 
 # 4. Start dev server
 docker compose --profile dev up

@@ -46,7 +46,7 @@ echo "Writing embeddings to: $EMB_DB"
 # Remove old embeddings DB
 rm -f "$EMB_DB"
 
-python -u app/backend/scraper/embed.py --semester "$SEMESTER" --input-dir data
+python -u backend/scraper/embed.py --semester "$SEMESTER" --input-dir data
 
 deactivate
 echo "Done! You can now docker compose up as usual."

@@ -13,20 +13,20 @@
 
 ## Data Flow
 
-1. **Crawler** (`app/backend/scraper/management/commands/crawl_vvz.py`):
+1. **Crawler** (`backend/scraper/crawl.py`):
    - Scrapes ETH VVZ tables via BeautifulSoup
    - Handles hierarchical categories (levelIndicator PNG counting, depth 0-3)
    - Cleans `\xa0` (NBSP) → space
    - Outputs SQLite: `lectures_<semester>.db`
 
-2. **Embeddings** (`app/backend/scraper/management/commands/generate_embeddings.py`):
+2. **Embeddings** (`backend/scraper/embed.py`):
    - Loads `all-MiniLM-L6-v2` (384-dim) via sentence-transformers
    - Embeds each text field separately (title, abstract, content, learning_objective, lecture_notes, literature)
    - Stores in `embeddings_<semester>.db` with sqlite-vec virtual table
 
 3. **Web App**:
-   - **Django REST API** (`app/backend/api/`): Text search, semantic search, autocomplete, category hierarchy
-   - **Next.js 15 Frontend** (`app/frontend/app/`): Search UI, infinite scroll, hover-expand cards, dark mode
+   - **Django REST API** (`backend/api/`): Text search, semantic search, autocomplete, category hierarchy
+   - **Next.js 15 Frontend** (`frontend/app/`): Search UI, infinite scroll, hover-expand cards, dark mode
    - **PostgreSQL + pgvector** for production vector search
 
 ## Search Modes

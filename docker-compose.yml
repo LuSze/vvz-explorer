@@ -10,11 +10,11 @@ services:
   backend-dev:
     profiles: ["dev"]
     build:
-      context: ./app/backend
+      context: ./backend
       dockerfile: Dockerfile.dev
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./app/backend:/app
+      - ./backend:/app
       - ./data:/data
     ports:
       - "8000:8000"
@@ -29,11 +29,11 @@ services:
   frontend-dev:
     profiles: ["dev"]
     build:
-      context: ./app/frontend
+      context: ./frontend
       dockerfile: Dockerfile.dev
     command: npm run dev
     volumes:
-      - ./app/frontend:/app
+      - ./frontend:/app
       - /app/node_modules
       - /app/.next
     ports:
@@ -67,7 +67,7 @@ services:
   backend-prod:
     profiles: ["prod"]
     build:
-      context: ./app/backend
+      context: ./backend
       dockerfile: Dockerfile
     volumes:
       - staticfiles:/app/staticfiles
@@ -88,7 +88,7 @@ services:
   frontend-prod:
     profiles: ["prod"]
     build:
-      context: ./app/frontend
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"

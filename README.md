@@ -37,36 +37,35 @@ docker compose --profile dev up
 
 ```
 vvz-explorer/
-├── app/                          # Web application (Django + Next.js)
-│   ├── backend/                  # Django REST API
-│   │   ├── backend/settings/     # base.py, dev.py, prod.py
-│   │   ├── api/                  # DRF views, serializers, URLs
-│   │   ├── scraper/              # Crawl & embed scripts (simple, no mgmt cmds)
-│   │   └── manage.py
-│   └── frontend/                 # Next.js 15 App Router
-│       └── app/                  # Pages, components, styles
-├── crawler/                      # Archived Jupyter notebooks (read-only)
-├── data/                         # SQLite DBs (gitignored)
-├── docs/                         # Documentation
-├── docker-compose.yml            # Dev + Prod profiles
-├── .env.example                  # Environment template
-└── README.md                     # This file
+├── backend/                        # Django REST API
+│   ├── backend/settings/           # base.py, dev.py, prod.py
+│   ├── api/                        # DRF views, serializers, URLs
+│   ├── scraper/                    # Crawl & embed scripts (simple, no mgmt cmds)
+│   └── manage.py
+├── frontend/                       # Next.js 15 App Router
+│   └── app/                        # Pages, components, styles
+├── crawler/                        # Archived Jupyter notebooks (read-only)
+├── data/                           # SQLite DBs (gitignored)
+├── docs/                           # Documentation
+├── docker-compose.yml              # Dev + Prod profiles
+├── .env.example                    # Environment template
+└── README.md                       # This file
 ```
 
 ## Key Scripts
 
 ```bash
 # Crawl VVZ for FS2026
-python app/backend/scraper/crawl.py --semester 2026S
+python backend/scraper/crawl.py --semester 2026S
 
 # Generate embeddings (384-dim, all-MiniLM-L6-v2)
-python app/backend/scraper/embed.py --semester 2026S
+python backend/scraper/embed.py --semester 2026S
 
 # Re-embed with Nomic (768-dim, higher quality)
-python app/backend/reembed.py
+python backend/reembed.py
 
 # Or use the helper script
-./app/backend/embed.sh 2026S
+./backend/embed.sh 2026S
 ```
 
 ## Tech Stack

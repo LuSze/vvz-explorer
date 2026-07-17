@@ -4,17 +4,17 @@ These Jupyter notebooks contain the original crawlers and embedding pipelines. T
 
 ## Active Pipeline
 
-The crawler and embedding pipeline has been extracted to Django management commands in `../app/backend/scraper/management/commands/`:
+The crawler and embedding pipeline is now simple Python scripts in `../backend/scraper/`:
 
 ```bash
 # Crawl VVZ
-python manage.py crawl_vvz --semester 2026S
-
-# Import lectures to PostgreSQL
-python manage.py import_lectures --sqlite-path /path/to/lectures.db
+python ../backend/scraper/crawl.py --semester 2026S
 
 # Generate embeddings
-python manage.py generate_embeddings --semester 2026S
+python ../backend/scraper/embed.py --semester 2026S
+
+# Re-embed with Nomic (768-dim)
+python ../backend/reembed.py
 ```
 
 ## Notebooks (Read-Only)

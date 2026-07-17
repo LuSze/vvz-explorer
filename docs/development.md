@@ -22,7 +22,7 @@ docker compose --profile dev up
 ### Backend
 
 ```bash
-cd app/backend
+cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -39,7 +39,7 @@ python manage.py runserver 0.0.0.0:8000
 ### Frontend
 
 ```bash
-cd app/frontend
+cd frontend
 npm install
 npm run dev
 ```
@@ -53,27 +53,26 @@ SQLite databases in `data/` (gitignored):
 **To regenerate:**
 ```bash
 # Crawl VVZ
-python app/backend/scraper/crawl.py --semester 2026S
+python backend/scraper/crawl.py --semester 2026S
 
 # Generate embeddings
-python app/backend/scraper/embed.py --semester 2026S
+python backend/scraper/embed.py --semester 2026S
 
 # Or use the helper script
-./app/backend/embed.sh 2026S
+./backend/embed.sh 2026S
 ```
 
 ## Project Structure
 
 ```
 vvz-explorer/
-├── app/
-│   ├── backend/          # Django REST API
-│   │   ├── backend/      # Django project settings
-│   │   ├── api/          # DRF views, serializers, URLs
-│   │   ├── scraper/      # Crawler & embedding scripts
-│   │   └── manage.py
-│   └── frontend/         # Next.js 15 App Router
-│       └── app/          # Pages & components
+├── backend/              # Django REST API
+│   ├── backend/          # Django project settings
+│   ├── api/              # DRF views, serializers, URLs
+│   ├── scraper/          # Crawler & embedding scripts
+│   └── manage.py
+├── frontend/             # Next.js 15 App Router
+│   └── app/              # Pages & components
 ├── crawler/              # Archived Jupyter notebooks
 ├── data/                 # SQLite DBs (gitignored)
 ├── docs/                 # Documentation
@@ -90,10 +89,10 @@ vvz-explorer/
 | Django shell | `docker compose exec backend-dev python manage.py shell` |
 | Run migrations | `docker compose exec backend-dev python manage.py migrate` |
 | Create superuser | `docker compose exec backend-dev python manage.py createsuperuser` |
-| Crawl VVZ | `docker compose exec backend-dev python scraper/crawl.py --semester 2026S` |
-| Generate embeddings | `docker compose exec backend-dev python scraper/embed.py --semester 2026S` |
-| Frontend lint | `cd app/frontend && npm run lint` |
-| Frontend build | `cd app/frontend && npm run build` |
+| Crawl VVZ | `docker compose exec backend-dev python backend/scraper/crawl.py --semester 2026S` |
+| Generate embeddings | `docker compose exec backend-dev python backend/scraper/embed.py --semester 2026S` |
+| Frontend lint | `cd frontend && npm run lint` |
+| Frontend build | `cd frontend && npm run build` |
 
 ## API Endpoints (Dev)
 
@@ -113,10 +112,10 @@ vvz-explorer/
 
 ```bash
 # Backend tests
-cd app/backend && python manage.py test
+cd backend && python manage.py test
 
 # Frontend tests
-cd app/frontend && npm test
+cd frontend && npm test
 ```
 
 ## IDE Setup
@@ -133,7 +132,7 @@ Recommended extensions:
 
 ### PyCharm
 
-- Mark `app/backend` as Sources Root
+- Mark `backend` as Sources Root
 - Configure Django server: `manage.py runserver`
 - Python interpreter: `.venv/bin/python`
 
