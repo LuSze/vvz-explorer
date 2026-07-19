@@ -98,10 +98,7 @@ class LectureEmbedding(models.Model):
         ('lecture_notes', 'Lecture Notes'),
         ('literature', 'Literature'),
     ])
-    vector = models.BinaryField()  # Stored as binary blob; pgvector handles this via custom field
-
-    # For pgvector, we'll use a custom field. This is a placeholder.
-    # Actual vector storage uses pgvector.VectorField in production.
+    vector = models.BinaryField()  # Stored as binary blob
 
     class Meta:
         db_table = 'lecture_embeddings'

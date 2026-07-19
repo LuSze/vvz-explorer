@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 export default function Footer() {
-  const githubUrl = "https://github.com/yourusername/vvz-crawler-semantic-search";
+  const githubUrl = "https://github.com/LuSze/vvz-explorer";
   const currentYear = new Date().getFullYear();
 
   return (

@@ -20,8 +20,8 @@ esac
 echo "=== Generating embeddings for $SEMESTER ($SEM_DISPLAY) ==="
 
 # Install deps into a temporary venv
-python3 -m venv /tmp/embed-nomic
-source /tmp/embed-nomic/bin/activate
+python3 -m venv /tmp/embed-venv
+source /tmp/embed-venv/bin/activate
 
 # CPU-only torch
 pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu || \

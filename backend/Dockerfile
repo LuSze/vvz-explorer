@@ -17,6 +17,9 @@ RUN pip install --no-cache-dir --default-timeout=120 -r requirements.txt
 COPY . .
 
 # Collect static files
+ENV DJANGO_SETTINGS_MODULE=backend.settings.prod
+ARG DJANGO_SECRET_KEY=dummy-build-key
+ENV DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
 RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000

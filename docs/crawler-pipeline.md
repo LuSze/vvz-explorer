@@ -33,7 +33,7 @@ python backend/scraper/crawl.py --semester 2026S --output-dir /tmp/dbs
 
 ### 2. Embedding Generator (`backend/scraper/embed.py`)
 
-Generates vector embeddings for each lecture's text fields using `all-MiniLM-L6-v2` (384-dim).
+Generates 768-dim vector embeddings for each lecture's text fields using `nomic-embed-text-v1.5`.
 
 ```bash
 python backend/scraper/embed.py --semester 2026S
@@ -43,17 +43,7 @@ python backend/scraper/embed.py --semester 2026S
 - `embeddings` table (BLOB backup)
 - `vss_embeddings` virtual table (sqlite-vec for fast k-NN)
 
-### 3. Re-embed with Nomic (`backend/reembed.py`)
-
-Regenerates embeddings using `nomic-ai/nomic-embed-text-v1.5` (768-dim) for higher quality.
-
-```bash
-python backend/reembed.py
-```
-
-**Output:** Overwrites `data/embeddings_<SEMESTER>.db` with 768-dim vectors.
-
-### 4. Embedding Helper Script (`backend/embed.sh`)
+### 3. Embedding Helper Script (`backend/embed.sh`)
 
 Convenience script that sets up a virtual environment and runs the embedding pipeline.
 
@@ -71,13 +61,10 @@ Convenience script that sets up a virtual environment and runs the embedding pip
 # 1. Crawl VVZ for FS2026
 python backend/scraper/crawl.py --semester 2026S
 
-# 2. Generate embeddings (384-dim, all-MiniLM-L6-v2)
+# 2. Generate embeddings (768-dim, nomic-embed-text-v1.5)
 python backend/scraper/embed.py --semester 2026S
 
-# 3. (Optional) Re-embed with Nomic (768-dim, higher quality)
-python backend/reembed.py
-
-# 4. Start dev server
+# 3. Start dev server
 docker compose --profile dev up
 ```
 
@@ -107,4 +94,4 @@ data/
 - The crawler respects rate limits (default 0.3s delay between detail requests)
 - Each text field embedded separately for fine-grained search
 - sqlite-vec requires the `vec0` extension (loaded at runtime)
-- For production, use PostgreSQL + pgvector instead of SQLite
+- SQLite + sqlite-vec is used in all environments (both dev and prod)

@@ -152,4 +152,3 @@ Recommended extensions:
 - [Next.js 15 App Router](https://nextjs.org/docs/app)
 - [Tailwind CSS v4](https://tailwindcss.com/docs)
 - [sqlite-vec](https://github.com/asg017/sqlite-vec)
-- [pgvector](https://github.com/pgvector/pgvector)

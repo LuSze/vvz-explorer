@@ -1,6 +1,6 @@
 # VVZ Explorer — Semantic Search for ETH Zurich Course Catalogue
 
-A semantic search engine for the ETH Zurich Vorlesungsverzeichnis (VVZ). Find lectures by meaning, not just keywords — using vector embeddings with a Django + Next.js frontend.
+A semantic search engine for the ETH Zurich Vorlesungsverzeichnis (VVZ). Find lectures by meaning, not just keywords — using Nomic AI vector embeddings with a Django + Next.js frontend.
 
 ## Why this exists
 
@@ -10,7 +10,7 @@ A semantic search engine for the ETH Zurich Vorlesungsverzeichnis (VVZ). Find le
 | No cross-semester search | **Cross-semester semantic search** |
 | Rigid category tree | **Fuzzy category browsing** + semantic similarity |
 | No "similar lectures" | **Lecture-to-lecture similarity** by number → vector → nearest neighbors |
-| Rigid UI, slow navigation | **Instant search, infinite scroll, hover-expand cards, dark mode** |
+| Rigid UI, slow navigation | **Instant search, infinite scroll, hover-expand cards, dark mode, usable on Smartphones** |
 
 ## Quick Start
 
@@ -21,8 +21,9 @@ docker compose --profile dev up
 
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:8000/api/ |
+| App (frontend + API) | http://localhost:3000 |
+
+The backend API is proxied through the Next.js frontend via rewrites — only port 3000 is needed.
 
 ## Documentation
 
@@ -40,7 +41,7 @@ vvz-explorer/
 ├── backend/                        # Django REST API
 │   ├── backend/settings/           # base.py, dev.py, prod.py
 │   ├── api/                        # DRF views, serializers, URLs
-│   ├── scraper/                    # Crawl & embed scripts (simple, no mgmt cmds)
+│   ├── scraper/                    # Crawl & embed scripts
 │   └── manage.py
 ├── frontend/                       # Next.js 15 App Router
 │   └── app/                        # Pages, components, styles
@@ -58,11 +59,8 @@ vvz-explorer/
 # Crawl VVZ for FS2026
 python backend/scraper/crawl.py --semester 2026S
 
-# Generate embeddings (384-dim, all-MiniLM-L6-v2)
+# Generate embeddings (768-dim, nomic-embed-text-v1.5)
 python backend/scraper/embed.py --semester 2026S
-
-# Re-embed with Nomic (768-dim, higher quality)
-python backend/reembed.py
 
 # Or use the helper script
 ./backend/embed.sh 2026S
@@ -70,18 +68,29 @@ python backend/reembed.py
 
 ## Tech Stack
 
-- **Backend**: Django 5, DRF, Gunicorn, PostgreSQL + pgvector (prod) / SQLite (dev)
+- **Backend**: Django 5, DRF, Gunicorn, SQLite + sqlite-vec
 - **Frontend**: Next.js 15 (App Router), Tailwind CSS v4, React 19
-- **Embeddings**: sentence-transformers (all-MiniLM-L6-v2 / nomic-embed-text-v1.5)
-- **Vector Search**: sqlite-vec (dev), pgvector (prod)
+- **Embeddings**: sentence-transformers (nomic-embed-text-v1.5, 768-dim)
+- **Vector Search**: sqlite-vec (all environments — dev and prod)
 - **Infra**: Docker Compose with `dev`/`prod` profiles, Nginx reverse proxy
+
+## Resource Requirements
+
+Docker images (approximate sizes):
+
+| Container | Size |
+|-----------|------|
+| Backend | ~1.5 GB (includes CPU-only PyTorch + sentence-transformers) |
+| Frontend | ~300 MB (production standalone) / ~500 MB (dev) |
+| Nginx | ~25 MB |
+
+Total disk: ~2 GB for dev profile, ~2 GB for prod profile.
+RAM: ~500 MB (frontend) + ~1 GB (backend, mainly for model loading).
 
 ## License
 
-MIT — Free to use, modify, and distribute. Not affiliated with ETH Zurich or VSETH.
+AGPLv3 — Free to use, modify, and distribute. Contributions must be contributed back to the public repository. Not affiliated with ETH Zurich.
 
 ## Links
 
-- **GitHub**: https://github.com/yourusername/vvz-crawler-semantic-search
 - **Official VVZ**: https://vvz.ethz.ch
-- **VSETH**: https://vseth.ethz.ch

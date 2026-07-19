@@ -5,10 +5,10 @@
 ```
 ┌─────────────────┐     ┌──────────────────────┐     ┌──────────────────────────┐
 │  Crawler        │────▶│  Embedding Pipeline  │────▶│  Web App (Docker)        │
-│  (BeautifulSoup)│     │  (sentence-transformers│     │  ┌────────────────────┐  │
-│  → SQLite       │     │   + sqlite-vec)      │     │  │ Django REST + Postgres│  │
-└─────────────────┘     └──────────────────────┘     │  │ Next.js 15 + pgvector │  │
-                                                     └──────────────────────────┘
+│  (BeautifulSoup)│     │  (sentence-transformers│     │  ┌───────────────────────┐ │
+│  → SQLite       │     │   + sqlite-vec)      │     │  │ Django REST + SQLite   │ │
+└─────────────────┘     └──────────────────────┘     │  │ Next.js 15 + sqlite-vec│ │
+                                                      └──────────────────────────┘
 ```
 
 ## Data Flow
@@ -20,20 +20,20 @@
    - Outputs SQLite: `lectures_<semester>.db`
 
 2. **Embeddings** (`backend/scraper/embed.py`):
-   - Loads `all-MiniLM-L6-v2` (384-dim) via sentence-transformers
+   - Loads `nomic-embed-text-v1.5` (768-dim) via sentence-transformers
    - Embeds each text field separately (title, abstract, content, learning_objective, lecture_notes, literature)
    - Stores in `embeddings_<semester>.db` with sqlite-vec virtual table
 
 3. **Web App**:
    - **Django REST API** (`backend/api/`): Text search, semantic search, autocomplete, category hierarchy
    - **Next.js 15 Frontend** (`frontend/app/`): Search UI, infinite scroll, hover-expand cards, dark mode
-   - **PostgreSQL + pgvector** for production vector search
+   - **SQLite + sqlite-vec** for vector search
 
 ## Search Modes
 
 | Mode | Endpoint | Description |
 |------|----------|-------------|
-| Text Search | `/api/lectures/?search=` | PostgreSQL full-text search with filters |
+| Text Search | `/api/lectures/?search=` | SQLite FTS5 full-text search with filters |
 | Semantic Search | `/api/search/?q=` | Embed query → k-NN across all lectures |
 | Similar Lectures | `/api/lectures/<nr>/similar/` | Lecture number → fetch its embeddings → k-NN per field → aggregate |
 | Autocomplete | `/api/suggest/?q=` | Prefix suggestions for tracks, categories, lecturers, titles |
@@ -50,4 +50,4 @@ Frontend shows breadcrumb trail: Track › L1 › L2 › L3
 ## Deployment Profiles
 
 - **Dev** (`docker compose --profile dev up`): SQLite, hot reload, CORS=*
-- **Prod** (`docker compose --profile prod up -d`): PostgreSQL+pgvector, gunicorn, nginx, TLS
+- **Prod** (`docker compose --profile prod up -d`): SQLite+sqlite-vec, gunicorn, nginx, TLS

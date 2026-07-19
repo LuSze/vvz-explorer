@@ -2,7 +2,7 @@
 Generate embeddings for all lectures in a scraped VVZ database.
 
 Reads lectures_HS2026.db (or --semester variant), embeds each non-trivial
-text field with all-MiniLM-L6-v2, and writes results into
+text field with nomic-embed-text-v1.5 (768-dim), and writes results into
 embeddings_HS2026.db (sqlite-vec virtual table + BLOB backup).
 
 Usage:
@@ -21,7 +21,8 @@ import numpy as np
 import sqlite_vec
 from sentence_transformers import SentenceTransformer
 
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "nomic-ai/nomic-embed-text-v1.5"
+EMBEDDING_DIM = 768
 
 TEXT_FIELDS = [
     "title",
@@ -87,7 +88,7 @@ def main():
         return
 
     print(f"Loading model {EMBEDDING_MODEL}...")
-    model = SentenceTransformer(EMBEDDING_MODEL)
+    model = SentenceTransformer(EMBEDDING_MODEL, trust_remote_code=True)
     print("Model loaded.")
 
     lec_conn = sqlite3.connect(str(lec_path))
@@ -108,11 +109,11 @@ def main():
             embedding BLOB
         )
     """)
-    emb_conn.execute("""
+    emb_conn.execute(f"""
         CREATE VIRTUAL TABLE IF NOT EXISTS vss_embeddings USING vec0 (
             id INTEGER PRIMARY KEY,
             lecture_number TEXT,
-            embedding float[384]
+            embedding float[{EMBEDDING_DIM}]
         )
     """)
     emb_conn.commit()
@@ -160,7 +161,7 @@ def main():
             print(f"  Batch {i // batch_size + 1}: 0 embeddings (no meaningful text)")
             continue
 
-        embeddings = model.encode(texts)
+        embeddings = model.encode(texts, prompt_name="document")
 
         for lecture_number, embedding in zip(lecture_numbers, embeddings):
             emb_conn.execute(

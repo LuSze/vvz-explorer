@@ -10,11 +10,8 @@ The crawler and embedding pipeline is now simple Python scripts in `../backend/s
 # Crawl VVZ
 python ../backend/scraper/crawl.py --semester 2026S
 
-# Generate embeddings
+# Generate embeddings (768-dim, nomic-embed-text-v1.5)
 python ../backend/scraper/embed.py --semester 2026S
-
-# Re-embed with Nomic (768-dim)
-python ../backend/reembed.py
 ```
 
 ## Notebooks (Read-Only)
@@ -29,5 +26,5 @@ python ../backend/reembed.py
 
 - Notebooks reference paths relative to the old project structure
 - They use `sqlite-vec` (vec0 extension) for vector search
-- Production uses PostgreSQL + pgvector instead
+- SQLite + sqlite-vec is used in all environments (both dev and prod)
 - See `../docs/crawler-pipeline.md` for detailed documentation

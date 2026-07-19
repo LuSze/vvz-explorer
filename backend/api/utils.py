@@ -26,7 +26,7 @@ CROSS_SEMESTER_PARTNER = {
 def _semester_db_path(semester):
     if semester and semester in settings.SEMESTER_DB_MAP:
         lec, emb = settings.SEMESTER_DB_MAP[semester]
-        return settings.BASE_DIR / lec, settings.BASE_DIR / emb
+        return settings.DATA_DIR / lec, settings.DATA_DIR / emb
     return settings.LECTURES_DB_PATH, settings.EMBEDDINGS_DB_PATH
 
 
