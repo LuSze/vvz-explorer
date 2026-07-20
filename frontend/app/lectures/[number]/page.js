@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import BackButton from "./BackButton";
 import SimilarClient from "./SimilarClient";
 import ThemeToggle from "../../ThemeToggle";
@@ -11,9 +12,14 @@ function offeredInHref(item, depth) {
   return `/?${params.toString()}`;
 }
 
-const API = process.env.API_URL || "http://backend:8000/api";
-
 const _cache = new Map();
+
+async function getAPI() {
+  const h = await headers();
+  const host = h.get("host") || "localhost:3000";
+  const proto = h.get("x-forwarded-proto") || "http";
+  return `${proto}://${host}/api`;
+}
 
 async function fetchJSON(url) {
   if (_cache.has(url)) return _cache.get(url);
@@ -24,8 +30,9 @@ async function fetchJSON(url) {
   return data;
 }
 
-function getLecture(number, semester) {
-  let url = `${API}/lectures/${encodeURIComponent(number)}/`;
+async function getLecture(number, semester) {
+  const api = await getAPI();
+  let url = `${api}/lectures/${encodeURIComponent(number)}/`;
   if (semester) url += `?semester=${encodeURIComponent(semester)}`;
   return fetchJSON(url);
 }
