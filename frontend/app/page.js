@@ -614,7 +614,7 @@ function SearchPage() {
   }, [results.length, total, mode, loadingMore, loading]);
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="flex-1 bg-base-200">
       <header className="bg-primary text-primary-content shadow-sm">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
