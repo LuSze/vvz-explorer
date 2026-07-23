@@ -190,6 +190,17 @@ def init_db(db_path):
             FOREIGN KEY (arrow_two_category_id) REFERENCES arrow_two_categories(id),
             FOREIGN KEY (arrow_three_category_id) REFERENCES arrow_three_categories(id)
         );
+        -- These indexes make the app's database lookups fast.
+        CREATE INDEX IF NOT EXISTS idx_lectures_number
+            ON lectures(number);
+        CREATE INDEX IF NOT EXISTS idx_lll_lecture_id
+            ON lecture_lecturer_link(lecture_id);
+        CREATE INDEX IF NOT EXISTS idx_lcl_lecture_id
+            ON lecture_category_link(lecture_id);
+        CREATE INDEX IF NOT EXISTS idx_lcl_study_tracks_id
+            ON lecture_category_link(study_tracks_id);
+        CREATE INDEX IF NOT EXISTS idx_lcl_arrow_categories
+            ON lecture_category_link(arrow_one_category_id, arrow_two_category_id, arrow_three_category_id);
     """)
     conn.commit()
     return conn
