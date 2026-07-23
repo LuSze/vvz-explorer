@@ -33,6 +33,7 @@ The backend API is proxied through the Next.js frontend via rewrites — only po
 | Crawler Pipeline | [docs/crawler-pipeline.md](docs/crawler-pipeline.md) |
 | Deployment | [docs/deployment.md](docs/deployment.md) |
 | Development | [docs/development.md](docs/development.md) |
+| IPFS Data | [docs/ipfs.md](docs/ipfs.md) |
 
 ## Project Structure
 
@@ -86,6 +87,10 @@ Docker images (approximate sizes):
 
 Total disk: ~2 GB for dev profile, ~2 GB for prod profile.
 RAM: ~500 MB (frontend) + ~1 GB (backend, mainly for model loading).
+
+## Data
+
+Pre-crawled databases are available on IPFS for offline use or self-hosting. See [docs/ipfs.md](docs/ipfs.md).
 
 ## License
 
