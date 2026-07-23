@@ -109,6 +109,11 @@ def main():
             embedding BLOB
         )
     """)
+    # This index makes finding a lecture by its number fast.
+    emb_conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_embeddings_lecture_number "
+        "ON embeddings(lecture_number)"
+    )
     emb_conn.execute(f"""
         CREATE VIRTUAL TABLE IF NOT EXISTS vss_embeddings USING vec0 (
             id INTEGER PRIMARY KEY,

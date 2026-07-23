@@ -65,6 +65,9 @@ python backend/scraper/embed.py --semester 2026S
 
 # Or use the helper script
 ./backend/embed.sh 2026S
+
+# Backfill query indexes on DBs crawled before they were added
+python backend/scraper/add_indexes.py --lectures data/lectures_HS2026.db --embeddings data/embeddings_HS2026.db
 ```
 
 ## Tech Stack
